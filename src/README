@@ -1,0 +1,7 @@
+Instructions for usage
+
+1. compile with "make"
+
+2. run with ./ray3 [<width> <height>]
+
+3. image is generated in current directory.

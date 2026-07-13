@@ -1,0 +1,4 @@
+What to change
+    memory management: manage structures on the stack, not the heap
+        all functions that create a structure should overwrite already allocd memory
+    rendered object formatting: nix hardcoded objects, read from input file!
