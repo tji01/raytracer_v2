@@ -1,6 +1,6 @@
 FLAGS=-g -Wall -std=c99 
 
-ray3: structs.h lin_alg.h stb_image_write.h main.c 
+ray3: structs.h lin_alg.h stb_image_write.h obj_loader.h main.c 
 	gcc ${FLAGS} -o ray3 main.c -lm
 
 .PHONY: clean

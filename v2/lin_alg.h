@@ -167,7 +167,7 @@ void vectorFromPoints(point* initial, point* terminal, vector* v)
     newVector(  (terminal->x) - (initial->x),
                 (terminal->y) - (initial->y), 
                 (terminal->z) - (initial->z), 
-                &v
+                v
             );
 }
 

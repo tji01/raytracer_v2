@@ -37,10 +37,12 @@ int main(int argc, char* argv[])
 {
     float top = 512;
     float side = 512;
+    /*
     int shadow = 0;
     float channels = 3;
 
     float light[3] = {3, 8, -15};
+    */
     /*
         read arguments
             dimensions of image to create
@@ -65,10 +67,11 @@ int main(int argc, char* argv[])
     side = atof((argv[2]));
 
     begin:
-    printf("Loading objects...");\
+    printf("Loading objects...");
     
-    char objects[1028];
-    loadObjects(objects, 1028, "icosahedron.obj");
+    char objects[4096];
+    char mem[2048];
+    loadObjects(mem, 2048, objects, 4096, "icosahedron.obj");
 
     printf("done\n");
 }
