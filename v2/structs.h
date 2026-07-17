@@ -8,13 +8,20 @@ This file defines structures and functions useful for the organization of the pr
 
 */
 
+/*
+    The type of geometry to render, likely going to be deprecated
 
+*/
 enum type {
     SPHERE,
     TRI
 };
 
-// a point in space
+/*
+    Defines a point in space. 
+
+    float x, y, z
+*/
 typedef struct Point
 {
     float x;
@@ -23,6 +30,11 @@ typedef struct Point
 
 }point;
 
+/*
+    Defines a direction in space.
+
+    float x, y, z
+*/
 typedef struct Vector
 {
     float x;
@@ -31,11 +43,19 @@ typedef struct Vector
 
 }vector;
 
+/*
+    Defines a loacation and direction in space
+
+    vector* v
+    point* o
+
+*/
 typedef struct Ray
 {
     vector* v;
     point* o;
 }ray;
+
 
 typedef struct Sphere
 {
@@ -43,6 +63,12 @@ typedef struct Sphere
     float radius;
 }ball;
 
+/*
+    Defines a triangle's location in vector space.
+
+    point* a, b, c
+
+*/
 typedef struct Triangle
 {
     point* a;
@@ -51,10 +77,14 @@ typedef struct Triangle
 
 }tri;
 
+/*
+    Defines the color a geometric object should color a pixel.
+
+    int r, g, b
+*/
 typedef struct Color
 {
     int r;
-
     int g;
     int b;
 }color;
@@ -65,13 +95,18 @@ typedef struct Color
 
     It holds an address and the type of object located at that address.
 
+    enum type kind
+    void* location
+    int reflective
+    color color
+
 */
 typedef struct Object
 {
     enum type kind;
     void* location;
     int reflective;
-    color color;
+    color color; //this maybe should be a pointer
 }obj;
 
 /*

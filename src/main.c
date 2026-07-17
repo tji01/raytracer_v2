@@ -1,5 +1,6 @@
 
 
+
 /*
 
 Raytracer
@@ -10,7 +11,7 @@ Tyler Iverson
 Renders objects defined in this file
 
 depends on structs.h, lin_alg.h, and stb_image_write.h
-
+a
 */
 
 
@@ -32,6 +33,7 @@ float map(float value, float input_min, float input_max, float output_min, float
 int indexToPix_X(int i);
 int indexToPix_Y(int i);
 void draw(int index, unsigned char* image, ray* r, obj** objects);
+ray* reflection(ray* r, ray* norm, point* collision);
 
 
 float light[3] = {3, 8, -15};

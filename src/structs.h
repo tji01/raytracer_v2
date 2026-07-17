@@ -12,7 +12,10 @@
 
 */
 
+/*
+    Type of object to render, likely going to be deprecated
 
+*/
 
 enum type {
     SPHERE,
@@ -20,7 +23,10 @@ enum type {
 };
 
 
-// a point in space
+/*
+    Defining a point in space. Contains pointers to floats
+
+*/
 typedef struct Point
 {
     float* x;
