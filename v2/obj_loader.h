@@ -154,9 +154,9 @@ int loadObjects
                 int point_two = atoi(strtok_r(b, "/", &b_context));
                 int point_three = atoi(strtok_r(c, "/", &c_context));
 
-                triangles[t_i].a = &(vertices[point_one - 1]);
-                triangles[t_i].b = &(vertices[point_two - 1]);
-                triangles[t_i].c = &(vertices[point_three - 1]);
+                triangles[t_i].b = &(vertices[point_one - 1]);
+                triangles[t_i].c = &(vertices[point_two - 1]);
+                triangles[t_i].a = &(vertices[point_three - 1]);
             }
             t_i++;
         }
@@ -168,18 +168,19 @@ int loadObjects
     //for each triangle, create an object struct
     obj* objects = (obj*)object_array;
     int i = 0;
+    int autoshade = 0;
     for(; i < t_i; i++)
     {
         //#0B78B3
         objects[i].kind = TRI;
         objects[i].location = &(triangles[i]);
-        objects[i].color.r = 0x0b;
-        objects[i].color.g = 0x78;
-        objects[i].color.g = 0xb3;
+        objects[i].color.r = (autoshade == 1)? clamp(0, 255, 11 + (i*5)): 11;
+        objects[i].color.g = (autoshade == 1)? clamp(0, 255, 120 + (i*5)): 120;
+        objects[i].color.b = (autoshade == 1)? clamp(0, 255, 179 + (i*5)): 179;
         objects[i].reflective = 0;
-
+        printf("%d %d %d\n", objects[i].color.r, objects[i].color.g, objects[i].color.b);
     }
-
+    printf("%d verts (%d bytes)\n%d tris (%d bytes)\n%d objs (%d bytes)\n", v_i, v_i*4, t_i, (int)sizeof(tri)*t_i, t_i, (int)sizeof(obj)*t_i);
     fclose(file);
 
     return i;

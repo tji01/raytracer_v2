@@ -45,7 +45,7 @@ int shadow = 0;
 int NUM_OBJ = 0;
 float channels = 3;
 
-float light[3] = {0, 0, 3};
+float light[3] = {3, 3, 0};
 point theLight;
 vector zero;
 
@@ -80,9 +80,9 @@ int main(int argc, char* argv[])
     begin:
     printf("Loading objects...");
     
-    obj objects[4096];
+    obj* objects = malloc(sizeof(obj) * 4000);
 
-    char mem[2048];
+    char* mem = malloc(sizeof(obj) * 4000);
 
     memset(objects, 0, sizeof(obj)*4096);
     memset(mem, 0, 2048);
@@ -97,13 +97,15 @@ int main(int argc, char* argv[])
     unsigned char* image = malloc(sizeof(unsigned char) * side * top * channels);
 
     point imageMidpoint;
-    newPoint(0, 0, 2, &imageMidpoint);
-
-    vector camera_perspective;
-    newVector(0, 0, 2, &camera_perspective);
+    newPoint(0, 0, -4, &imageMidpoint);
 
     point origin;
-    newPoint(0, 0, 5, &origin);
+    newPoint(0, 0, -5, &origin);
+
+    vector camera_perspective;
+    vectorFromPoints(&origin, &imageMidpoint, &camera_perspective);
+    normalize(&camera_perspective);
+    //newVector(0, 0, 2, &camera_perspective);
 
     newPoint(light[0], light[1], light[2], &theLight);
     newVector(0, 0, 0, &zero);
@@ -122,8 +124,11 @@ int main(int argc, char* argv[])
             -2,
             &pix
         );
-
+        //vector from middle of image to pixel
         vectorFromPoints(&imageMidpoint, &pix, &v1);
+        
+        //sum of perspective vector and v1: result is 
+        //  vector from origin to pixel
         vectorSum(&v1, &camera_perspective);
         newRay(&origin, &v1, &r);
         
@@ -231,34 +236,52 @@ void reflect(ray* r, ray* norm, point* collision)
 void shade_reflect(color* c, ray* _ray, float t, obj* j, int val, obj* objects)
 {
     //find collision point
+
+    //copy of ray vector
     vector rayVector;
     newVector(_ray->v->x, _ray->v->y, _ray->v->z, &rayVector);
     
+    //the location of the intersection of ray and an object
     point r_terminal;
+    newVector(rayVector.x, rayVector.y, rayVector.z, (vector*)&r_terminal);
     scale(t, (vector*)&r_terminal);
 
+    //the normal of the face of the object at r_terminal
     ray norm;
-    newRay(&r_terminal, &zero, &norm);
+    newRay(&r_terminal, &zero, &norm);//zero is just placeholder
     
+    //origin of ray
     point p;
     newPoint(_ray->o->x, _ray->o->y, _ray->o->z, &p);
 
-    ray r;
-    newRay(&p, &rayVector, &r);
+    //copy of ray vector
+    vector v;
+    newVector(_ray->v->x, _ray->v->y, _ray->v->z, &v);
 
-    //find normal vector
+    //copy of ray
+    ray r;
+    newRay(&p, &v, &r);
+
+    //find normal vector for triangle
+
+    //vector from two points on triangle, a-->b
     vector a;
     vectorFromPoints( ((tri*)j->location)->a, ((tri*)j->location)->b, &a);
 
+    //vector from two points on triangle,  a-->c
     vector b;
     vectorFromPoints( ((tri*)j->location)->a, ((tri*)j->location)->c, &b);
 
+    //cross product of the two vectors AB X AC is the normal of the triangle
     cross(&a, &b);
+
+    //update norm with normal vector
     newRay(&r_terminal, &a, &norm);
     
+    //make normal's vector a unit vector
     normalize(norm.v);
 
-    //if object is reflective, do reflecting or diffuse
+    //if object is reflective, do reflecting else diffuse
 
     int count = 0;
     if(j->reflective == 0) goto shading;
@@ -320,19 +343,15 @@ void shade_reflect(color* c, ray* _ray, float t, obj* j, int val, obj* objects)
 
     //diffuse shading, shadow
     //find vector toward light
-    shadow = 0;
-
-    
-    
+    shadow = 1;
 
     vector toLight;
     vectorFromPoints(&r_terminal, &theLight, &toLight);
-
     normalize(&toLight);
 
     vector bumpedCollision;
     newVector(r_terminal.x, r_terminal.y, r_terminal.z, &bumpedCollision);
-    scale(.99999, &bumpedCollision);
+    scale(.000001, &bumpedCollision);
 
     ray lightRay;
     newRay((point*)&bumpedCollision, &toLight, &lightRay);
@@ -342,7 +361,7 @@ void shade_reflect(color* c, ray* _ray, float t, obj* j, int val, obj* objects)
     int dummy;
     float shadow_t = intersect(&lightRay, objects, &dummy);
 
-    if((shadow_t != (float)__INT_MAX__) )//if there is a shadow
+    if(!(shadow_t != (float)__INT_MAX__) )//if there is a shadow
     {
         c->r = (c->r * .2);
         c->g = (c->g * .2);
